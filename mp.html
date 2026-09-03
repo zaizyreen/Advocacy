@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marikina Landmarks — Distance Map</title>
+<style>
+    :root {
+        --ink:        #1c2b28;
+        --paper:      #efe6d3;
+        --paper-dark: #e2d4b8;
+        --teal:       #16332f;
+        --teal-deep:  #0e2421;
+        --gold-light: #d9ac57;
+        --rust:       #a8452f;
+        --green:      #3e7c59;
+        --line:       rgba(28,43,40,0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: var(--teal-deep);
+        color: var(--ink);
+        font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    /* ---------- Map plate ---------- */
+    .plate {
+        background: var(--paper);
+        border-radius: 8px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.06);
+        padding: 14px;
+        max-width: 900px;
+        width: 100%;
+    }
+
+    .map-container {
+        position: relative;
+        width: 100%;
+        border-radius: 4px;
+        overflow: hidden;
+        background-color: var(--paper-dark);
+        background-image:
+            linear-gradient(to right, var(--line) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+        background-size: 22px 22px;
+    }
+
+    .map-container::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 60px rgba(28,43,40,0.18);
+    }
+
+    .hello {
+        display: block;
+        width: 100%;
+        height: auto;
+        opacity: 0.55;
+        mix-blend-mode: multiply;
+    }
+
+    #connections {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5; /* Higher than nodes so lines/chips stay on top */
+        pointer-events: none;
+    }
+
+    line.route {
+        stroke: var(--rust);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 1 9;
+    }
+
+    .distance-label {
+        fill: var(--paper);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        text-anchor: middle;
+    }
+
+    .distance-chip {
+        fill: var(--rust);
+    }
+
+    /* ---------- Nodes ---------- */
+    .node {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        padding: 0;
+        border-radius: 50%;
+        border: 2px solid var(--teal);
+        background: var(--paper);
+        color: var(--teal);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+
+    .node:hover { transform: translate(-50%, -50%) scale(1.12); }
+    .node:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+
+    .node.selected {
+        background: #b98a34;
+        border-color: #b98a34;
+        color: var(--teal-deep);
+        box-shadow: 0 0 0 5px rgba(185,138,52,0.28);
+    }
+
+    .node.connected {
+        background: var(--green);
+        border-color: var(--green);
+        color: var(--paper);
+    }
+
+    /* ---------- Info card ---------- */
+    .info-box {
+        position: absolute;
+        width: 230px;
+        background: var(--paper);
+        border: 1px solid rgba(28,43,40,0.18);
+        border-left: 4px solid var(--rust);
+        border-radius: 6px;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+        padding: 14px 16px;
+        z-index: 10;
+        overflow: visible;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        animation: riseIn 0.18s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .info-box { animation: none; }
+    }
+
+    @keyframes riseIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        display: none;
+    }
+
+    .info-box h2 {
+        margin: 0 0 6px;
+        font-family: 'Iowan Old Style', Georgia, serif;
+        font-size: 1rem;
+        color: var(--teal);
+        padding-right: 16px;
+    }
+
+    .info-box p {
+        color: #56503f;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.05rem;
+        line-height: 1;
+        cursor: pointer;
+        color: #a89b7f;
+        padding: 2px;
+    }
+    .close-btn:hover { color: var(--rust); }
+    .close-btn:focus-visible { outline: 2px solid var(--gold-light); }
+
+    .info-arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.18));
+    }
+    .info-arrow.arrow-down  { border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--paper); }
+    .info-arrow.arrow-up    { border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--paper); }
+    .info-arrow.arrow-right { border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid var(--paper); }
+    .info-arrow.arrow-left  { border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 8px solid var(--paper); }
+</style>
+</head>
+<body>
+
+<div class="plate">
+    <div class="map-container" id="mapContainer">
+        <img src="MarikinaMap.png" class="hello" alt="Map of Marikina City">
+
+        <svg id="connections"></svg>
+
+        <button class="node" data-id="1" data-title="Kapitan Moy" data-info="The historical house of Laurentio 'Kapitan Moy' Guevara, known as the cradle of the Marikina shoe industry." data-image="Kmoy.jpg" style="top: 76%; left: 34.5%;">1</button>
+        <button class="node" data-id="2" data-title="Our Lady of the Abandoned" data-info="A historic parish church in Marikina housing the venerated image of the Nuestra Señora de los Desamparados." data-image="" style="top: 76%; left: 35%;">2</button>
+        <button class="node" data-id="3" data-title="Marikina Sports Center" data-info="A premier sports complex featuring an Olympic-size swimming pool, rubberized track oval, and a large grandstand." data-image="" style="top: 71%; left: 42%;">3</button>
+        <button class="node" data-id="4" data-title="Shoe Museum" data-info="Home to a massive collection of footwear, famously featuring shoes owned by former First Lady Imelda Marcos." data-image="" style="top: 79%; left: 35.5%;">4</button>
+        <button class="node" data-id="5" data-title="Marikina Cityhood Park" data-info="A scenic public park that commemorates the city's conversion into a highly urbanized city." data-image="" style="top: 69.7%; left: 41%;">5</button>
+        <button class="node" data-id="6" data-title="Freedom Park" data-info="A popular public space located right across the city hall, often used for community events and gatherings." data-image="" style="top: 73%; left: 40%;">6</button>
+        <button class="node" data-id="7" data-title="Marikina River Park" data-info="An award-winning park along the Marikina River banks popular for jogging, biking, and outdoor recreation." data-image="" style="top: 72%; left: 31%;">7</button>
+    </div>
+</div>
+
+<script>
+    let firstSelectedButton = null;
+    const svg = document.getElementById('connections');
+    const container = document.getElementById('mapContainer');
+
+    let currentOpenBox = null;
+    let currentOpenNodeId = null;
+
+    function pointerArrow(boxLeft, boxTop, boxWidth, boxHeight, nodeCenterX, nodeCenterY) {
+        const arrow = document.createElement('div');
+        arrow.className = 'info-arrow';
+
+        const boxRight = boxLeft + boxWidth;
+        const boxBottom = boxTop + boxHeight;
+        const overlapsX = nodeCenterX >= boxLeft && nodeCenterX <= boxRight;
+
+        if (nodeCenterY >= boxBottom && overlapsX) {
+            arrow.classList.add('arrow-down');
+            arrow.style.left = `${Math.min(Math.max(nodeCenterX - boxLeft, 14), boxWidth - 14) - 8}px`;
+            arrow.style.bottom = '-8px';
+        } else if (nodeCenterY <= boxTop && overlapsX) {
+            arrow.classList.add('arrow-up');
+            arrow.style.left = `${Math.min(Math.max(nodeCenterX - boxLeft, 14), boxWidth - 14) - 8}px`;
+            arrow.style.top = '-8px';
+        } else if (nodeCenterX >= boxRight) {
+            arrow.classList.add('arrow-right');
+            arrow.style.top = `${Math.min(Math.max(nodeCenterY - boxTop, 14), boxHeight - 14) - 8}px`;
+            arrow.style.right = '-8px';
+        } else {
+            arrow.classList.add('arrow-left');
+            arrow.style.top = `${Math.min(Math.max(nodeCenterY - boxTop, 14), boxHeight - 14) - 8}px`;
+            arrow.style.left = '-8px';
+        }
+
+        return arrow;
+    }
+
+    document.querySelectorAll('.node').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const clickedButton = e.currentTarget;
+            const nodeId = clickedButton.getAttribute('data-id');
+
+            if (currentOpenBox) {
+                currentOpenBox.remove();
+                currentOpenBox = null;
+                currentOpenNodeId = null;
+            }
+
+            const btnRect = clickedButton.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const padding = 8;
+
+            let leftPos = (btnRect.left - containerRect.left) + 15;
+            let topPos = (btnRect.top - containerRect.top) - 20;
+
+            const boxWidth = 230;
+            const boxHeight = 170;
+
+            const maxLeft = Math.max(padding, containerRect.width - boxWidth - padding);
+            const maxTop = Math.max(padding, containerRect.height - boxHeight - padding);
+            leftPos = Math.min(Math.max(leftPos, padding), maxLeft);
+            topPos = Math.min(Math.max(topPos, padding), maxTop);
+
+            const infoBox = document.createElement('div');
+            infoBox.className = 'info-box';
+            infoBox.style.left = `${leftPos}px`;
+            infoBox.style.top = `${topPos}px`;
+
+            const titleText = clickedButton.getAttribute('data-title');
+            const infoText = clickedButton.getAttribute('data-info');
+            const imageSrc = clickedButton.getAttribute('data-image');
+
+            let imgHtml = '';
+            if (imageSrc && imageSrc.trim() !== '') {
+                imgHtml = `<img src="${imageSrc}" style="display: block;" alt="${titleText}">`;
+            }
+
+            infoBox.innerHTML = `
+                <button class="close-btn" aria-label="Close">&times;</button>
+                ${imgHtml}
+                <h2>${titleText}</h2>
+                <p>${infoText}</p>
+            `;
+
+            const closeBtn = infoBox.querySelector('.close-btn');
+            closeBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                infoBox.remove();
+                if (currentOpenBox === infoBox) {
+                    currentOpenBox = null;
+                    currentOpenNodeId = null;
+                }
+            });
+
+            const nodeCenterX = btnRect.left + btnRect.width / 2 - containerRect.left;
+            const nodeCenterY = btnRect.top + btnRect.height / 2 - containerRect.top;
+            infoBox.appendChild(pointerArrow(leftPos, topPos, boxWidth, boxHeight, nodeCenterX, nodeCenterY));
+
+            container.appendChild(infoBox);
+            currentOpenBox = infoBox;
+            currentOpenNodeId = nodeId;
+
+            if (firstSelectedButton === clickedButton) {
+                clickedButton.classList.remove('selected');
+                firstSelectedButton = null;
+                return;
+            }
+
+            if (!firstSelectedButton) {
+                firstSelectedButton = clickedButton;
+                clickedButton.classList.add('selected');
+            } else {
+                const secondSelectedButton = clickedButton;
+
+                firstSelectedButton.classList.remove('selected');
+                firstSelectedButton.classList.add('connected');
+                secondSelectedButton.classList.add('connected');
+
+                drawLine(firstSelectedButton, secondSelectedButton);
+
+                firstSelectedButton = null;
+            }
+        });
+    });
+
+    function drawLine(btn1, btn2) {
+        const rect1 = btn1.getBoundingClientRect();
+        const rect2 = btn2.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        const x1 = rect1.left + rect1.width / 2 - containerRect.left;
+        const y1 = rect1.top + rect1.height / 2 - containerRect.top;
+        const x2 = rect2.left + rect2.width / 2 - containerRect.left;
+        const y2 = rect2.top + rect2.height / 2 - containerRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('class', 'route');
+        svg.appendChild(line);
+
+        // Dynamically compute distance using the grid scale: 
+        // background-size is 22px by 22px, and 1 grid = 330 meters.
+        const pixelDistance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const distanceKm = (pixelDistance * (330 / 22) / 1000).toFixed(1);
+        const distanceText = `${distanceKm} km`;
+
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+
+        const chip = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        const chipWidth = distanceText.length * 6.4 + 14;
+        chip.setAttribute('x', midX - chipWidth / 2);
+        chip.setAttribute('y', midY - 21);
+        chip.setAttribute('width', chipWidth);
+        chip.setAttribute('height', 18);
+        chip.setAttribute('rx', 9);
+        chip.setAttribute('class', 'distance-chip');
+        svg.appendChild(chip);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', midX);
+        text.setAttribute('y', midY - 8);
+        text.setAttribute('class', 'distance-label');
+        text.textContent = distanceText;
+        svg.appendChild(text);
+    }
+</script>
+
+</body>
+</html>

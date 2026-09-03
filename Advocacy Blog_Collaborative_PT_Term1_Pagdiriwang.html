@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marikina Landmarks — A Walking Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --ink:        #3A2E2B;
+        --paper:      #F4EEDD;
+        --paper-dark: #ecdfc0;
+        --navy:       #1c2947;
+        --navy-deep:  #16213d;
+        --gold:       #E8A33D;
+        --gold-deep:  #C68022;
+        --brown:      #8C3B24;
+        --brown-deep: #6B2C1B;
+        --line:       rgba(58,46,43,0.14);
+        --muted:      #6c5a45;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--navy-deep);
+        color: var(--ink);
+        font-family: 'EB Garamond', 'Iowan Old Style', Georgia, serif;
+    }
+
+    img { max-width: 100%; display: block; }
+
+    /* ===================== HERO (from Yapak Ng Marikina) ===================== */
+    .hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 300px;
+        background: radial-gradient(circle at 12% 45%, #2c3e63 0%, #1c2947 38%, #16213d 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2.5rem 1.5rem 2rem;
+    }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 90px;
+        width: 460px;
+        height: 460px;
+        transform: translate(-50%, -50%);
+        background: repeating-conic-gradient(
+            from 0deg,
+            #E8A33D 0deg 9deg,
+            transparent 9deg 20deg
+        );
+        border-radius: 50%;
+        opacity: 0.9;
+        filter: drop-shadow(0 0 25px rgba(232, 163, 61, 0.35));
+    }
+
+    .hero-figure {
+        position: absolute;
+        left: 90px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 190px;
+        height: 190px;
+        z-index: 1;
+    }
+
+    .hero-figure svg {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+    }
+
+    .hero-text {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero h1 {
+        font-family: 'Cinzel Decorative', serif;
+        font-weight: 900;
+        font-size: clamp(2.1rem, 5vw, 3.6rem);
+        letter-spacing: 2px;
+        color: #F0A93E;
+        text-shadow:
+            -2px -2px 0 #16213d,
+            2px -2px 0 #16213d,
+            -2px 2px 0 #16213d,
+            2px 2px 0 #16213d,
+            0 4px 10px rgba(0,0,0,0.5);
+        line-height: 1.15;
+        margin: 0;
+    }
+
+    .hero .subtitle {
+        margin-top: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        font-size: clamp(0.9rem, 1.9vw, 1.2rem);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #9FC3E8;
+        text-shadow:
+            0 1px 0 rgba(0,0,0,0.6),
+            0 0 12px rgba(159, 195, 232, 0.35);
+    }
+
+    .hero .subtitle::before,
+    .hero .subtitle::after {
+        content: "";
+        width: 46px;
+        height: 1px;
+        background: linear-gradient(to var(--dir, right), transparent, #9FC3E8 60%, #9FC3E8);
+    }
+
+    .hero .subtitle::before {
+        --dir: left;
+        background: linear-gradient(to left, transparent, #9FC3E8 60%, #9FC3E8);
+    }
+
+    .hero-tagline {
+        margin-top: 1.7rem;
+        border: 1px solid rgba(240, 217, 168, 0.4);
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.18);
+        color: #F0D9A8;
+        padding: 14px 30px;
+        font-family: 'Cinzel', serif;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        max-width: 640px;
+        cursor: default;
+    }
+
+    /* ===================== SEGMENTED NAV TABS (from Yapak Ng Marikina) ===================== */
+    nav {
+        background-color: #8C3B24;
+        border-top: 3px solid #3A2E2B;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    nav .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav ul li {
+        flex: 1;
+        border-right: 2px solid #3A2E2B;
+    }
+
+    nav ul li:last-child {
+        border-right: none;
+    }
+
+    nav ul li a {
+        display: block;
+        text-align: center;
+        color: #F0D9A8;
+        text-decoration: none;
+        padding: 16px 10px;
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        letter-spacing: 1px;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        transition: all 0.25s ease;
+    }
+
+    nav ul li a:hover {
+        background-color: #C86D51;
+        color: #F4EEDD;
+    }
+
+    nav ul li a.active {
+        background-color: #6B2C1B;
+        color: #F0A93E;
+        box-shadow: inset 0 -4px 0 #F0A93E;
+    }
+
+    @media (max-width: 900px) {
+        .hero::before,
+        .hero-figure {
+            display: none;
+        }
+        nav ul {
+            flex-wrap: wrap;
+        }
+        nav ul li {
+            flex: 1 1 33%;
+            border-bottom: 2px solid #3A2E2B;
+        }
+        nav ul li a {
+            padding: 10px 6px;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* ===================== MAP SECTION ===================== */
+    .map-section {
+        display: flex;
+        justify-content: center;
+        padding: 3rem 1.25rem 1rem;
+        background: var(--navy-deep);
+    }
+
+    .plate {
+        background: var(--paper);
+        border-radius: 8px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.06);
+        padding: 14px;
+        max-width: 900px;
+        width: 100%;
+    }
+
+    .map-container {
+        position: relative;
+        width: 100%;
+        border-radius: 4px;
+        overflow: hidden;
+        background-color: var(--paper-dark);
+        background-image:
+            linear-gradient(to right, var(--line) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+        background-size: 22px 22px;
+    }
+
+    .map-container::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 60px rgba(58,46,43,0.18);
+    }
+
+    .hello {
+        display: block;
+        width: 100%;
+        height: auto;
+        opacity: 0.6;
+        mix-blend-mode: multiply;
+        filter: sepia(0.75) saturate(1.6) hue-rotate(178deg) brightness(0.92) contrast(1.05);
+    }
+
+    .map-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(160deg, rgba(28,41,71,0.16) 0%, rgba(140,59,36,0.12) 100%);
+        mix-blend-mode: color;
+        z-index: 2;
+    }
+
+    #connections {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    line.route {
+        stroke: var(--brown);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 1 9;
+    }
+
+    .distance-label {
+        fill: var(--paper);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        text-anchor: middle;
+    }
+
+    .distance-chip { fill: var(--brown); }
+
+    .node {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        padding: 0;
+        border-radius: 50%;
+        border: 2px solid var(--navy);
+        background: var(--paper);
+        color: var(--navy);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+
+    .node:hover { transform: translate(-50%, -50%) scale(1.12); }
+    .node:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .node.selected {
+        background: var(--gold-deep);
+        border-color: var(--gold-deep);
+        color: var(--navy-deep);
+        box-shadow: 0 0 0 5px rgba(198,128,34,0.28);
+    }
+
+    .node.connected {
+        background: var(--brown-deep);
+        border-color: var(--brown-deep);
+        color: var(--paper);
+    }
+
+    .map-caption {
+        max-width: 900px;
+        margin: 0.9rem auto 0;
+        text-align: center;
+        color: #cbb99a;
+        font-size: 0.92rem;
+        font-style: italic;
+        padding: 0 1.25rem;
+    }
+
+    /* ---------- Info card on the map ---------- */
+    .info-box {
+        position: absolute;
+        width: 230px;
+        background: var(--paper);
+        border: 1px solid rgba(58,46,43,0.18);
+        border-left: 4px solid var(--brown);
+        border-radius: 6px;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+        padding: 14px 16px;
+        z-index: 10;
+        overflow: visible;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        animation: riseIn 0.18s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) { .info-box { animation: none; } }
+
+    @keyframes riseIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        display: none;
+    }
+
+    .info-box h2 {
+        margin: 0 0 6px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.95rem;
+        color: var(--navy);
+        padding-right: 16px;
+    }
+
+    .info-box p {
+        color: #4a3d2e;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        margin: 0;
+        font-style: normal;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.05rem;
+        line-height: 1;
+        cursor: pointer;
+        color: #a8895f;
+        padding: 2px;
+    }
+    .close-btn:hover { color: var(--brown); }
+    .close-btn:focus-visible { outline: 2px solid var(--gold); }
+
+    .info-arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.18));
+    }
+    .info-arrow.arrow-down  { border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--paper); }
+    .info-arrow.arrow-up    { border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--paper); }
+    .info-arrow.arrow-right { border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid var(--paper); }
+    .info-arrow.arrow-left  { border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 8px solid var(--paper); }
+
+    /* ===================== LANDMARK REGISTRY ===================== */
+    .registry {
+        background: var(--paper);
+        padding: 4rem 1.5rem 5rem;
+    }
+
+    .registry-head {
+        max-width: 1040px;
+        margin: 0 auto 2.6rem;
+        text-align: center;
+    }
+
+    .registry-head .hero-eyebrow-row .stroke { background: var(--brown); }
+    .registry-head .hero-eyebrow { color: var(--brown); }
+
+    .hero-eyebrow-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin-bottom: 1.1rem;
+    }
+    .hero-eyebrow-row .stroke {
+        width: 46px;
+        height: 1px;
+        background: var(--gold-deep);
+    }
+    .hero-eyebrow {
+        font-family: 'Cinzel', serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        color: var(--gold);
+    }
+
+    .registry-head h2 {
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+        color: var(--navy);
+        margin: 0.6rem 0 0.7rem;
+        letter-spacing: 0.5px;
+    }
+
+    .registry-head p {
+        max-width: 54ch;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.6;
+    }
+
+    .card-grid {
+        max-width: 1040px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.6rem;
+    }
+
+    @media (max-width: 720px) {
+        .card-grid { grid-template-columns: 1fr; }
+    }
+
+    .lcard {
+        background: #f7efdc;
+        border: 1px solid rgba(58,46,43,0.14);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 6px 18px rgba(58,46,43,0.08);
+    }
+
+    .lcard-art {
+        position: relative;
+        height: 168px;
+        background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lcard-art svg { width: 78px; height: 78px; }
+
+    .lcard-number {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--paper);
+        color: var(--navy);
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        font-size: 0.82rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid var(--gold-deep);
+    }
+
+    .lcard-body {
+        padding: 1.35rem 1.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .lcard-body h3 {
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        font-size: 1.15rem;
+        color: var(--navy);
+        margin: 0 0 0.55rem;
+        letter-spacing: 0.2px;
+    }
+
+    .lcard-body .desc {
+        color: #4a3d2e;
+        font-size: 0.98rem;
+        line-height: 1.58;
+        margin: 0 0 1.1rem;
+    }
+
+    .lcard-meta {
+        margin-top: auto;
+        border-top: 1px dashed rgba(58,46,43,0.22);
+        padding-top: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .meta-row {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 0.86rem;
+        color: #4a3d2e;
+    }
+
+    .meta-row .tag {
+        flex-shrink: 0;
+        font-family: 'Cinzel', serif;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        color: var(--brown);
+        width: 58px;
+        padding-top: 2px;
+    }
+
+    .meta-row .val { line-height: 1.5; }
+    .meta-row .usd { color: var(--muted); font-style: italic; }
+
+    /* ===================== FOOTER (from Yapak Ng Marikina) ===================== */
+    footer.footer {
+        background: radial-gradient(circle at 12% 45%, #2c3e63 0%, #1c2947 38%, #16213d 100%);
+        color: #F4EEDD;
+        padding: 3.5rem 2rem 2rem;
+        border-top: 4px solid #E8A33D;
+        box-shadow: inset 0 10px 20px rgba(0,0,0,0.4);
+        width: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .footer-grid {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .footer-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-right: 1px solid rgba(159, 195, 232, 0.2);
+        padding-right: 1.5rem;
+    }
+
+    .footer-brand img.logo-img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 1rem;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+
+    .footer-brand h2 {
+        font-family: 'Cinzel', serif;
+        font-size: 1.1rem;
+        color: #F0A93E;
+        letter-spacing: 1px;
+    }
+
+    .footer-col h3 {
+        font-family: 'Cinzel', serif;
+        font-size: 0.95rem;
+        color: #F0D9A8;
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #E8A33D;
+        padding-bottom: 6px;
+        display: inline-block;
+    }
+
+    .footer-col ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-col ul li a {
+        color: #d1c7b7;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.25s ease;
+    }
+
+    .footer-col ul li a:hover {
+        color: #F0A93E;
+        padding-left: 5px;
+    }
+
+    .lore {
+        display: inline-flex;
+        background: linear-gradient(135deg, #E8A33D, #C68022);
+        color: #16213d;
+        text-decoration: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        font-weight: 700;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .lore:hover {
+        background: linear-gradient(135deg, #F0B555, #D89230);
+        color: #16213d;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (max-width: 1100px) {
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .footer-brand {
+            grid-column: span 2;
+            border-right: none;
+            border-bottom: 1px solid rgba(159, 195, 232, 0.2);
+            padding-bottom: 1.5rem;
+            padding-right: 0;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .footer-grid {
+            grid-template-columns: 1fr;
+        }
+        .footer-brand {
+            grid-column: span 1;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-figure">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="96" fill="#16213d"/>
+            <g stroke="#E8A33D" stroke-width="6" stroke-linecap="round">
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(0 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(20 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(40 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(60 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(80 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(100 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(120 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(140 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(160 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(180 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(200 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(220 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(240 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(260 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(280 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(300 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(320 100 100)"/>
+                <line x1="100" y1="30" x2="100" y2="6" transform="rotate(340 100 100)"/>
+            </g>
+            <circle cx="100" cy="100" r="64" fill="#1c2947" stroke="#E8A33D" stroke-width="3"/>
+            <path d="M52,132 C52,112 66,99 84,96 L119,87 C134,83 150,81 161,90 C169,96 170,107 162,116 L157,129 C155,137 147,141 135,141 L58,141 C54,141 52,137 52,132 Z" fill="#7A4A24" stroke="#3A2214" stroke-width="2"/>
+            <rect x="52" y="139" width="112" height="9" rx="3" fill="#3A2214"/>
+            <line x1="93" y1="98" x2="107" y2="90" stroke="#F0D9A8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="98" y1="104" x2="112" y2="96" stroke="#F0D9A8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="103" y1="110" x2="117" y2="102" stroke="#F0D9A8" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+    <div class="hero-text">
+        <h1>Yapak Ng Marikina</h1>
+        <div class="subtitle">Bakas ng Kahapon, Landas ng Bukas</div>
+        <div class="hero-tagline"><i>Bawat yapak ay may kuwento. Bawat kuwento ay may pamana. At bawat pamana ay bahagi ng Marikina.</i></div>
+    </div>
+</div>
+
+<nav>
+    <div class="nav-container">
+        <ul>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1.html">Home</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_History.html">History</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_Pagdiriwang.html" class="active">Lokasyon</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_Industriya.html">Industriya</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_Pananampalataya.html">Pananampalataya</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_Kaugalian.html">Kaugalian</a></li>
+            <li><a href="Advocacy Blog_Collaborative_PT_Term1_Kultura.html">Kultura</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section class="map-section">
+    <div class="plate">
+        <div class="map-container" id="mapContainer">
+            <img src="MarikinaMap.png" class="hello" alt="Map of Marikina City">
+
+            <svg id="connections"></svg>
+
+            <button class="node" data-id="1" data-title="Kapitan Moy" data-info="The historical house of Laurentio 'Kapitan Moy' Guevara, known as the cradle of the Marikina shoe industry." data-image="Kmoy.jpg" style="top: 76%; left: 34.5%;">1</button>
+            <button class="node" data-id="2" data-title="Our Lady of the Abandoned" data-info="A historic parish church in Marikina housing the venerated image of the Nuestra Señora de los Desamparados." data-image="" style="top: 76%; left: 35%;">2</button>
+            <button class="node" data-id="3" data-title="Marikina Sports Center" data-info="A premier sports complex featuring an Olympic-size swimming pool, rubberized track oval, and a large grandstand." data-image="" style="top: 71%; left: 42%;">3</button>
+            <button class="node" data-id="4" data-title="Shoe Museum" data-info="Home to a massive collection of footwear, famously featuring shoes owned by former First Lady Imelda Marcos." data-image="" style="top: 79%; left: 35.5%;">4</button>
+            <button class="node" data-id="5" data-title="Marikina Cityhood Park" data-info="A scenic public park that commemorates the city's conversion into a highly urbanized city." data-image="" style="top: 69.7%; left: 41%;">5</button>
+            <button class="node" data-id="6" data-title="Freedom Park" data-info="A popular public space located right across the city hall, often used for community events and gatherings." data-image="" style="top: 73%; left: 40%;">6</button>
+            <button class="node" data-id="7" data-title="Marikina River Park" data-info="An award-winning park along the Marikina River banks popular for jogging, biking, and outdoor recreation." data-image="" style="top: 72%; left: 31%;">7</button>
+        </div>
+    </div>
+</section>
+<p class="map-caption" style="font-size:18px;margin-bottom:10px;"> Scale = 1cm(1grid):33000cm</p>
+
+<section class="registry">
+    <div class="registry-head">
+        <div class="hero-eyebrow-row">
+            <span class="stroke"></span>
+            <span class="hero-eyebrow">ANG REGISTRY</span>
+            <span class="stroke"></span>
+        </div>
+        <h2>Ano Ang Mahahanap mo sa Bawat Lugar?</h2>
+        <p>Isang direktoryo o gabay ang ibinibigay mo para sa mga nasabing pasyalan, na may mga detalyeng tulad ng oras ng pagbubukas, bayarin, at mga paalala para sa mga bisita. Peso fees ay converted mula ₱62.5 hanggang US$1.</p>
+    </div>
+
+    <div class="card-grid">
+
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">1</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 30 L32 12 L54 30" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="15" y="30" width="34" height="24" stroke="#E8A33D" stroke-width="2.5"/>
+                    <rect x="27" y="38" width="10" height="16" stroke="#E8A33D" stroke-width="2.5"/>
+                    <line x1="20" y1="36" x2="20" y2="44" stroke="#E8A33D" stroke-width="2"/>
+                    <line x1="44" y1="36" x2="44" y2="44" stroke="#E8A33D" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Kapitan Moy Residence</h3>
+                <p class="desc">Isang 200 taong gulang na lumang bahay sa Kalye J.P. Rizal na pagmamay-ari ni Don Laureano "Kapitan Moy" Guevara, ang kinikilalang nagdala ng unang industriya ng paggawa ng sapatos sa Marikina.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Daily, 8:00 AM – 5:00 PM</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">₱50 walk-in admission <span class="usd">(≈ US$0.80)</span></span></div>
+                </div>
+            </div>
+        </article>
+
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">2</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 8 L36 18 L32 16 L28 18 Z" fill="#E8A33D"/>
+                    <line x1="32" y1="16" x2="32" y2="26" stroke="#E8A33D" stroke-width="2.5"/>
+                    <path d="M14 54 L14 30 L32 20 L50 30 L50 54" stroke="#E8A33D" stroke-width="2.5" stroke-linejoin="round"/>
+                    <rect x="27" y="38" width="10" height="16" stroke="#E8A33D" stroke-width="2.5"/>
+                    <path d="M20 44 a4 4 0 0 1 8 0" stroke="#E8A33D" stroke-width="2"/>
+                    <path d="M36 44 a4 4 0 0 1 8 0" stroke="#E8A33D" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Our Lady of the Abandoned</h3>
+                <p class="desc">Ang Diocesan Shrine and Parish of Our Lady of the Abandoned, isang simbahan noong panahon ng Baroque na kumukupkop sa iginagalang na imahen ng Nuestra Señora de los Desamparados at nagpapatibay sa buhay-espirituwal ng Marikina.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Daily, 6:00 AM – 7:00 PM</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">Free entry <span class="usd">(donations welcome)</span></span></div>
+                </div>
+            </div>
+        </article>
+
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">3</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="32" cy="32" r="21" stroke="#E8A33D" stroke-width="2.5"/>
+                    <circle cx="32" cy="32" r="13" stroke="#E8A33D" stroke-width="2"/>
+                    <line x1="32" y1="11" x2="32" y2="19" stroke="#E8A33D" stroke-width="2"/>
+                    <line x1="32" y1="45" x2="32" y2="53" stroke="#E8A33D" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Marikina Sports Center</h3>
+                <p class="desc">Isang kompleks na pinapatakbo ng pamahalaang panlungsod na may 400-metrong tartan oval, isang swimming pool na may sukat na pangkumpetisyon sa Olimpiyada, at mga korte para sa badminton, basketball, at volleyball — isang paboritong puntahan ng mga nag-a-jog at lumalangoy.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Oval &amp; courts open 24 hours; pool Tue–Sun, 8:00–11:30 AM, 1:00–4:30 PM &amp; 6:00–9:30 PM (closed Mon)</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">₱10 general entry <span class="usd">(≈ US$0.16)</span> · pool ₱40–60 <span class="usd">(≈ US$0.64–0.96)</span></span></div>
+                </div>
+            </div>
+        </article>
+
+<!-- Shoe Museum (4) -->
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">4</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 40 C10 40 12 28 24 28 C32 28 36 34 44 34 C52 34 56 26 56 26 L54 44 L10 44 Z" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 44 L16 50 L50 50 L50 44" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Shoe Museum</h3>
+                <p class="desc">Tahanan ng malawak na koleksyon ng mga sapatos, lalo na ang tanyag na koleksyon ng mga sapatos na pagmamay-ari ng dating Unang Ginang Imelda Marcos.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Daily, 8:00 AM – 5:00 PM</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">₱50 admission <span class="usd">(≈ US$0.80)</span></span></div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Marikina Cityhood Park (5) -->
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">5</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 12 L38 50 L26 50 Z" stroke="#E8A33D" stroke-width="2.5" stroke-linejoin="round"/>
+                    <circle cx="32" cy="10" r="3" fill="#E8A33D"/>
+                    <line x1="20" y1="50" x2="44" y2="50" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Marikina Cityhood Park</h3>
+                <p class="desc">Isang pampublikong liwasan na nagpaparangalan at naglalaan ng alaala sa pagiging ganap na highly urbanized city ng Marikina.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Open Daily, 24 Hours</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">Free Admission</span></div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Freedom Park (6) -->
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">6</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="20" y1="12" x2="20" y2="52" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M20 16 L48 24 L20 32 Z" fill="#E8A33D" fill-opacity="0.2" stroke="#E8A33D" stroke-width="2.5" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Freedom Park</h3>
+                <p class="desc">Isang kilalang pampublikong espasyo na matatagpuan sa tapat ng Marikina City Hall, kadalasang ginagamit sa mga pagtitipon at programang panlipunan.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Open Daily, 24 Hours</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">Free Admission</span></div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Marikina River Park (7) -->
+        <article class="lcard">
+            <div class="lcard-art">
+                <span class="lcard-number">7</span>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 24 C18 18 26 30 34 24 C42 18 50 30 54 24" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M10 38 C18 32 26 44 34 38 C42 32 50 44 54 38" stroke="#E8A33D" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="lcard-body">
+                <h3>Marikina River Park</h3>
+                <p class="desc">Isang tanyag at pinarangalang parke sa kahabaan ng Ilog Marikina na paboritong puntahan para sa pag-jogging, pagbisikleta, at mga aktibidad sa labas.</p>
+                <div class="lcard-meta">
+                    <div class="meta-row"><span class="tag">HOURS</span><span class="val">Open Daily, 24 Hours</span></div>
+                    <div class="meta-row"><span class="tag">FEE</span><span class="val">Free Admission</span></div>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <img src="LOGO.png" alt="logo" class="logo-img">
+            <h2>Yapak Ng Marikina</h2>
+        </div>
+        <div class="footer-col">
+            <h3>Mga Kasapi Sa Grupo:</h3>
+            <ul>
+                <li><a href="#">Angeles, John Luise</a></li>
+                <li><a href="#">Bingat, Austin George</a></li>
+                <li><a href="#">Cloud, Joszon</a></li>
+                <li><a href="#">Ferro, Charles Lenard</a></li>
+                <li><a href="#">Sabangan, Kahlil Kaede</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h3>Members:</h3>
+            <ul>
+                <li><a href="#">Anoñuevo, Isabella</a></li>
+                <li><a href="#">Beltran, Yesha</a></li>
+                <li><a href="#">Celestino, Ysabelle</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h3>Contact Us</h3>
+            <ul>
+                <li><strong>Via Email:</strong></li>
+                <li>406762150041@depedmarikina.ph</li>
+                <li style="margin-top: 5px;"><strong>Via Contact Number:</strong></li>
+                <li>0977-734-0921</li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h3>Mga Sanggunian:</h3>
+            <div style="margin-top: 5px;">
+                <a href="https://docs.google.com/document/d/153NqEkc5abRa5THmjb8ZgW4X9AnnkOpRwI5r__5kjig/edit?usp=sharing" class="lore">Reference Page</a>
+            </div>
+			<br>
+			<div class="footer-col">
+                <h3>Mga Miyembro</h3>
+                <div style="margin-top: 5px;">
+                    <a href="Members.html" class="lore">Members</a>
+                </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    let firstSelectedButton = null;
+    const svg = document.getElementById('connections');
+    const container = document.getElementById('mapContainer');
+
+    let currentOpenBox = null;
+    let currentOpenNodeId = null;
+
+    function pointerArrow(boxLeft, boxTop, boxWidth, boxHeight, nodeCenterX, nodeCenterY) {
+        const arrow = document.createElement('div');
+        arrow.className = 'info-arrow';
+
+        const boxRight = boxLeft + boxWidth;
+        const boxBottom = boxTop + boxHeight;
+        const overlapsX = nodeCenterX >= boxLeft && nodeCenterX <= boxRight;
+
+        if (nodeCenterY >= boxBottom && overlapsX) {
+            arrow.classList.add('arrow-down');
+            arrow.style.left = `${Math.min(Math.max(nodeCenterX - boxLeft, 14), boxWidth - 14) - 8}px`;
+            arrow.style.bottom = '-8px';
+        } else if (nodeCenterY <= boxTop && overlapsX) {
+            arrow.classList.add('arrow-up');
+            arrow.style.left = `${Math.min(Math.max(nodeCenterX - boxLeft, 14), boxWidth - 14) - 8}px`;
+            arrow.style.top = '-8px';
+        } else if (nodeCenterX >= boxRight) {
+            arrow.classList.add('arrow-right');
+            arrow.style.top = `${Math.min(Math.max(nodeCenterY - boxTop, 14), boxHeight - 14) - 8}px`;
+            arrow.style.right = '-8px';
+        } else {
+            arrow.classList.add('arrow-left');
+            arrow.style.top = `${Math.min(Math.max(nodeCenterY - boxTop, 14), boxHeight - 14) - 8}px`;
+            arrow.style.left = '-8px';
+        }
+
+        return arrow;
+    }
+
+    document.querySelectorAll('.node').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const clickedButton = e.currentTarget;
+            const nodeId = clickedButton.getAttribute('data-id');
+
+            if (currentOpenBox) {
+                currentOpenBox.remove();
+                currentOpenBox = null;
+                currentOpenNodeId = null;
+            }
+
+            const btnRect = clickedButton.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const padding = 8;
+
+            let leftPos = (btnRect.left - containerRect.left) + 15;
+            let topPos = (btnRect.top - containerRect.top) - 20;
+
+            const boxWidth = 230;
+            const boxHeight = 170;
+
+            const maxLeft = Math.max(padding, containerRect.width - boxWidth - padding);
+            const maxTop = Math.max(padding, containerRect.height - boxHeight - padding);
+            leftPos = Math.min(Math.max(leftPos, padding), maxLeft);
+            topPos = Math.min(Math.max(topPos, padding), maxTop);
+
+            const infoBox = document.createElement('div');
+            infoBox.className = 'info-box';
+            infoBox.style.left = `${leftPos}px`;
+            infoBox.style.top = `${topPos}px`;
+
+            const titleText = clickedButton.getAttribute('data-title');
+            const infoText = clickedButton.getAttribute('data-info');
+            const imageSrc = clickedButton.getAttribute('data-image');
+
+            let imgHtml = '';
+            if (imageSrc && imageSrc.trim() !== '') {
+                imgHtml = `<img src="${imageSrc}" style="display: block;" alt="${titleText}">`;
+            }
+
+            infoBox.innerHTML = `
+                <button class="close-btn" aria-label="Close">&times;</button>
+                ${imgHtml}
+                <h2>${titleText}</h2>
+                <p>${infoText}</p>
+            `;
+
+            const closeBtn = infoBox.querySelector('.close-btn');
+            closeBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                infoBox.remove();
+                if (currentOpenBox === infoBox) {
+                    currentOpenBox = null;
+                    currentOpenNodeId = null;
+                }
+            });
+
+            const nodeCenterX = btnRect.left + btnRect.width / 2 - containerRect.left;
+            const nodeCenterY = btnRect.top + btnRect.height / 2 - containerRect.top;
+            infoBox.appendChild(pointerArrow(leftPos, topPos, boxWidth, boxHeight, nodeCenterX, nodeCenterY));
+
+            container.appendChild(infoBox);
+            currentOpenBox = infoBox;
+            currentOpenNodeId = nodeId;
+
+            if (firstSelectedButton === clickedButton) {
+                clickedButton.classList.remove('selected');
+                firstSelectedButton = null;
+                return;
+            }
+
+            if (!firstSelectedButton) {
+                firstSelectedButton = clickedButton;
+                clickedButton.classList.add('selected');
+            } else {
+                const secondSelectedButton = clickedButton;
+
+                firstSelectedButton.classList.remove('selected');
+                firstSelectedButton.classList.add('connected');
+                secondSelectedButton.classList.add('connected');
+
+                drawLine(firstSelectedButton, secondSelectedButton);
+
+                firstSelectedButton = null;
+            }
+        });
+    });
+
+    function drawLine(btn1, btn2) {
+        const rect1 = btn1.getBoundingClientRect();
+        const rect2 = btn2.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        const x1 = rect1.left + rect1.width / 2 - containerRect.left;
+        const y1 = rect1.top + rect1.height / 2 - containerRect.top;
+        const x2 = rect2.left + rect2.width / 2 - containerRect.left;
+        const y2 = rect2.top + rect2.height / 2 - containerRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('class', 'route');
+        svg.appendChild(line);
+
+        // Dynamically compute distance using the grid scale:
+        // background-size is 22px by 22px, and 1 grid = 330 meters.
+        const pixelDistance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const distanceKm = (pixelDistance * (330 / 22) / 1000);
+
+        // Estimate walking time at an average pace of 5 km/h (~12 min per km).
+        const walkMinutes = Math.max(1, Math.round(distanceKm * 12));
+        const walkTimeText = walkMinutes >= 60
+            ? `${Math.floor(walkMinutes / 60)}h ${walkMinutes % 60}m`
+            : `${walkMinutes} min`;
+
+        const distanceText = `${distanceKm.toFixed(1)} km · ${walkTimeText} walk`;
+
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+
+        const chip = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        const chipWidth = distanceText.length * 6.1 + 16;
+        chip.setAttribute('x', midX - chipWidth / 2);
+        chip.setAttribute('y', midY - 21);
+        chip.setAttribute('width', chipWidth);
+        chip.setAttribute('height', 18);
+        chip.setAttribute('rx', 9);
+        chip.setAttribute('class', 'distance-chip');
+        svg.appendChild(chip);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', midX);
+        text.setAttribute('y', midY - 8);
+        text.setAttribute('class', 'distance-label');
+        text.textContent = distanceText;
+        svg.appendChild(text);
+    }
+</script>
+
+</body>
+</html>
